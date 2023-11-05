@@ -29,7 +29,9 @@ const Page: React.FC<RedirectPageType> = async ({ searchParams }) => {
     if (status === "succeeded") {
       return <div>You have successfully paid {amount * 0.01}</div>;
     } else if (status === "awaiting_payment_method") {
-      return <div>There was an error processing your payment</div>;
+      const lastPaymentError = response.data.last_payment_error.message
+
+      return <div>There was an error processing your payment. Error message: {lastPaymentError}</div>;
     } else {
       return <div>Unknown status: {status}</div>;
     }
