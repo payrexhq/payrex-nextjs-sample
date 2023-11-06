@@ -21,11 +21,13 @@ const PaymentForm: React.FC<PaymentFormType> = ({
         theme: "payrex",
       };
 
+      // Creating an elements instance.
       const locElements = payrex.elements({
         appearance: appearance,
         clientSecret: paymentIntentClientSecret,
       });
 
+      // Creating a payment element instance.
       const paymentElement = locElements.create("payment", {
         layout: "accordion",
         // Set this if you want to try out setting default values on load of the element.
@@ -46,6 +48,7 @@ const PaymentForm: React.FC<PaymentFormType> = ({
         }, */
       });
 
+      // Mounting the payment element to an HTML div element with id payment-form.
       paymentElement.mount("#payment-form");
 
       setElements(locElements);
@@ -57,7 +60,8 @@ const PaymentForm: React.FC<PaymentFormType> = ({
     await payrex.attachPaymentMethod({
       elements: elements,
       options: {
-        return_url: "http://demo.localhost/redirect",
+        // This is the URL where the user will be redirected after authentication
+        return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/redirect`,
       },
     });
     setIsPaying(false)
@@ -68,6 +72,7 @@ const PaymentForm: React.FC<PaymentFormType> = ({
       <Script
         src={process.env.NEXT_PUBLIC_PAYREX_JS_BASE_URL}
         onLoad={() => {
+          // Initializing PayRex instance
           const locPayrex = window.Payrex(
             process.env.NEXT_PUBLIC_PAYREX_PUBLIC_API_KEY
           );
