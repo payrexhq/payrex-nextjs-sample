@@ -5,7 +5,7 @@ This repository is a demo nodejs application integrating PayRex's payments produ
 ## Getting Started
 
 1. Install dependencies. Run npm install.
-2. Create a .env.local file where you can add your local environment variables. Please see `.env.example`` file for the available environment variables.
+2. Create a .env.local file where you can add your local environment variables. Please see `.env.example` file for the available environment variables.
   Sample values:
 
 ```bash
