@@ -1,28 +1,20 @@
 import type { Metadata } from 'next';
-import axios from "axios";
 import PaymentForm from "./PaymentForm";
+import Payrex from "payrex-node";
 
 export default async function Page() {
   let paymentIntentClientSecret;
 
   try {
-    const response = await axios.post(
-      `${process.env.PAYREX_API_BASE_URL}/payment_intents`,
-      {
-        currency: 'PHP',
-        payment_methods: ['card', 'gcash'],
-        amount: 15000
-      },
-      {
-        headers: {
-          Authorization: `Basic ${Buffer.from(
-            `${process.env.PAYREX_API_KEY}:`
-          ).toString('base64')}`
-        }
-      }
-    )
+    // Replace this with your PayRex Secret API key.
+    const payrex = new Payrex('sk_test_....')
+    const response = await payrex.paymentIntents.create({
+      currency: 'PHP',
+      payment_methods: ['card', 'gcash'],
+      amount: 15000
+    })
 
-    paymentIntentClientSecret = response.data.client_secret
+    paymentIntentClientSecret = response.clientSecret
   } catch (e) {
     console.error(e)
   }
@@ -34,5 +26,5 @@ export default async function Page() {
 }
 
 export const metadata: Metadata = {
-  title: "Sample Payment Demo"
+  title: "Sample Payment Demo of PayRex"
 };

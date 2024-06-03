@@ -1,8 +1,8 @@
 "use client";
 
-import Script from "next/script";
 import { useEffect, useState } from "react";
 import Loader from "./Loader";
+import {loadPayrex} from "payrex-js"
 
 type PaymentFormType = {
   paymentIntentClientSecret: string;
@@ -11,18 +11,21 @@ type PaymentFormType = {
 const PaymentForm: React.FC<PaymentFormType> = ({
   paymentIntentClientSecret,
 }) => {
-  const [payrex, setPayrex] = useState(null);
+  const [payrex, setPayrex] = useState<any>(null);
   const [elements, setElements] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
 
   useEffect(() => {
-    if (payrex !== null) {
+    const initializePayrex = async () => {
+      // Replace this with your PayRex Public API Key
+      const payrexLib = await loadPayrex('pk_test_...');
+
       const appearance = {
         theme: "payrex",
       };
 
       // Creating an elements instance.
-      const locElements = payrex.elements({
+      const locElements = payrexLib.elements({
         appearance: appearance,
         clientSecret: paymentIntentClientSecret,
       });
@@ -52,34 +55,28 @@ const PaymentForm: React.FC<PaymentFormType> = ({
       paymentElement.mount("#payment-form");
 
       setElements(locElements);
+      setPayrex(payrexLib);
     }
-  }, [payrex, paymentIntentClientSecret]);
+
+    initializePayrex(); 
+  }, []);
 
   const payAction = async () => {
     setIsPaying(true);
-    await payrex.attachPaymentMethod({
-      elements: elements,
-      options: {
-        // This is the URL where the user will be redirected after authentication
-        return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/redirect`,
-      },
-    });
+    if(payrex !== null) {
+      await payrex.attachPaymentMethod({
+        elements: elements,
+        options: {
+          // This is the URL where the user will be redirected after authentication. Replace this with your own URL.
+          return_url: `${window.location.href}/redirect`,
+        },
+      });
+    }
     setIsPaying(false)
   };
 
   return (
     <>
-      <Script
-        src={process.env.NEXT_PUBLIC_PAYREX_JS_BASE_URL}
-        onLoad={() => {
-          // Initializing PayRex instance
-          const locPayrex = window.Payrex(
-            process.env.NEXT_PUBLIC_PAYREX_PUBLIC_API_KEY
-          );
-
-          setPayrex(locPayrex);
-        }}
-      />
       <button
         onClick={payAction}
         type="button"
